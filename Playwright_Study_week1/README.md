@@ -107,7 +107,56 @@ Playwright_Study/
 ### 1️⃣ 克隆项目
 ```bash
 git clone <repository-url>
+```
+```bash
 cd Playwright_Study
+```
+
+### 2️⃣ 从克隆到运行（Mac M2 / Python 3.9）
+- 建议使用虚拟环境，避免系统环境依赖冲突。
+- 如果尚未安装 Homebrew（用于安装 Allure CLI），请根据需要自行安装。
+
+步骤：
+1. 进入测试项目目录：
+```bash
+cd Playwright_Study_week1
+```
+2. 创建并激活虚拟环境（推荐使用 .venv 目录）：
+```bash
+python3 -m venv .venv
+```
+```bash
+source .venv/bin/activate
+```
+3. 升级 pip（可选，但推荐）：
+```bash
+pip install -U pip
+```
+4. 安装 Python 依赖：
+```bash
+pip install -r requirements.txt
+```
+5. 安装 Playwright 浏览器（确保使用同一解释器执行）：
+```bash
+python3 -m playwright install
+```
+6. 安装 Allure 命令行工具（用于生成/查看报告，若不安装则仅跳过报告生成）：
+```bash
+brew install allure
+```
+7. 运行一键测试脚本：
+```bash
+bash run_all_tests.sh
+```
+
+验证（可选）：
+- 确认 pytest 指向虚拟环境：
+```bash
+which pytest
+```
+- 确认已安装 Playwright 包：
+```bash
+python3 -m pip show playwright
 ```
 
 ### 2️⃣ 一键安装和运行
@@ -131,140 +180,36 @@ chmod +x run_all_tests.sh
 
 ## 🔧 环境配置
 
-### 📋 系统要求
-- **Python**: 3.9+ 
-- **操作系统**: macOS, Windows, Linux
-- **浏览器**: Chrome, Firefox, Safari, Edge
+#### 📋 系统要求
+- Python: 3.9（Mac M2 建议使用 python3 与虚拟环境）
+- 操作系统: macOS、Windows、Linux
+- 浏览器: Chromium/Chrome、Firefox、WebKit（通过 `python3 -m playwright install` 安装）
 
-### 🔨 手动安装步骤
-
-#### 1. 创建虚拟环境（推荐）
+#### 🔨 手动安装步骤（与快速开始等效）
+1. 创建虚拟环境：
 ```bash
-# 创建虚拟环境
-python3 -m venv venv
-
-# 激活虚拟环境
-# macOS/Linux:
-source venv/bin/activate
-# Windows:
-venv\Scripts\activate
+python3 -m venv .venv
 ```
-
-#### 2. 安装 Python 依赖
+2. 激活虚拟环境（macOS/Linux）：
 ```bash
-cd Playwright_Study_week1
+source .venv/bin/activate
+```
+3. 安装依赖：
+```bash
 pip install -r requirements.txt
 ```
-
-#### 3. 安装 Playwright 浏览器
+4. 安装 Playwright 浏览器：
 ```bash
-# 安装所有浏览器
-python -m playwright install
-
-# 或只安装 Chrome
-python -m playwright install chromium
+python3 -m playwright install
 ```
-
-#### 4. 安装 Allure 命令行工具
+5. 安装 Allure CLI（macOS）：
 ```bash
-# macOS (使用 Homebrew)
 brew install allure
-
-# Windows (使用 Scoop)
-scoop install allure
-
-# 或从官网下载: https://docs.qameta.io/allure/#_installing_a_commandline
 ```
-
-### 📦 主要依赖包
-
-| 包名 | 版本 | 用途 |
-|------|------|------|
-| playwright | 1.49.0 | 浏览器自动化核心库 |
-| pytest | 8.3.4 | 测试框架 |
-| pytest-playwright | 0.6.2 | Playwright 的 Pytest 插件 |
-| allure-pytest | 2.13.5 | Allure 报告生成 |
-| requests | 2.32.3 | HTTP 请求库 |
-
-完整依赖列表请查看 [`requirements.txt`](Playwright_Study_week1/requirements.txt)
-
-## 📖 使用指南
-
-### 🎯 运行测试的多种方式
-
-#### 方式一：一键运行（推荐）
+6. 运行测试：
 ```bash
-cd Playwright_Study_week1
-./run_all_tests.sh
+bash run_all_tests.sh
 ```
-
-#### 方式二：基础运行
-```bash
-cd Playwright_Study_week1
-./run.sh
-```
-
-#### 方式三：直接使用 Pytest
-```bash
-cd Playwright_Study_week1
-
-# 运行所有测试
-pytest
-
-# 运行特定测试文件
-pytest tests/login/test_login.py
-
-# 运行特定测试函数
-pytest tests/login/test_login.py::test_login
-
-# 有头模式运行（显示浏览器）
-pytest --headed
-
-# 无头模式运行（后台运行）
-pytest --headless
-```
-
-#### 方式四：生成 Allure 报告
-```bash
-# 运行测试并生成 Allure 数据
-pytest --alluredir=allure-results
-
-# 生成 HTML 报告
-allure generate allure-results -o allure-report --clean
-
-# 启动 Allure 服务查看报告
-allure serve allure-results
-```
-
-### 🎛️ 测试配置选项
-
-#### Pytest 配置 (pytest.ini)
-```ini
-[tool:pytest]
-testpaths = tests
-addopts = 
-    --strict-markers
-    --strict-config
-    --alluredir=allure-results
-    --clean-alluredir
-markers =
-    smoke: 冒烟测试
-    regression: 回归测试
-    login: 登录相关测试
-```
-
-#### 浏览器配置选项
-```bash
-# 指定浏览器
-pytest --browser chromium
-pytest --browser firefox
-pytest --browser webkit
-
-# 设置浏览器选项
-pytest --headed --slowmo 1000  # 有头模式，每步延迟1秒
-```
-
-## 🧪 测试功能
 
 ### 🔐 登录功能测试
 
