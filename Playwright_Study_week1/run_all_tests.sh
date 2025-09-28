@@ -3,7 +3,7 @@
 # 自动化测试执行脚本
 # 功能：运行所有测试用例，生成Allure报告，并自动打开报告
 # 作者：熊🐻来个🥬
-# 日期：2025/1/16
+# 日期：2025/09/26
 # =============================================================================
 
 set -euo pipefail
@@ -88,9 +88,9 @@ cleanup_old_results() {
     fi
     
     # 清理日志文件
-    if [ -f "test_login.log" ]; then
-        rm test_login.log
-        log_info "已清理 test_login.log 文件"
+    if [ -d "test_log" ]; then
+        rm -rf test_log
+        log_info "已清理 test_log 文件"
     fi
     
     log_success "清理完成"
@@ -105,7 +105,8 @@ run_tests() {
     mkdir -p allure-results
     mkdir -p screenshots
     mkdir -p test_recordings
-    
+    mkdir -p test_log
+
     # 运行测试的参数
     PYTEST_ARGS=(
         "-v"                          # 详细输出
@@ -206,7 +207,7 @@ show_summary() {
 main() {
     # 切换到脚本所在目录
     cd "$(dirname "$0")"
-    
+
     print_separator
     log_info "🚀 开始执行自动化测试"
     log_info "当前目录: $(pwd)"
