@@ -53,7 +53,7 @@ def test_create_role(logged_in_page: Page):
         expect(name_input).to_have_value(role_name)
 
     with allure.step("点击确认按钮"):
-        confirm_button = logged_in_page.get_by_role("button", name="确 定")  # 修正：通常是"确定"而不是"确认"
+        confirm_button = logged_in_page.get_by_role("button", name="确定")  # 修正：通常是"确定"而不是"确认"
         expect(confirm_button).to_be_visible()
         confirm_button.click()
         
