@@ -25,13 +25,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# 新增：全局缓存登录后的 token（供 API 用例复用）
+AUTH_TOKEN = None
+
 # Session级别的浏览器fixture
 @pytest.fixture(scope="session")
 def browser(playwright):
     """Session级别的浏览器，整个测试会话共享"""
-    logger.info("🚀 Session Setup: Starting Chrome browser session")
+    logger.info("🚀 Session Setup: Starting Chromium browser session")
+    # 注意：不使用 channel="chrome"，避免额外原生窗口
     browser = playwright.chromium.launch(
-        channel="chrome", 
         headless=False,
         slow_mo=300
     )
@@ -39,64 +42,136 @@ def browser(playwright):
     logger.info("🧹 Session Teardown: Closing browser session")
     browser.close()
 
-# Session级别的已登录上下文
 @pytest.fixture(scope="session")
 def logged_in_context(browser):
-    """Session级别的已登录上下文，登录一次后所有测试共享"""
+    """
+    Session级别的已登录上下文：
+    - 只登录一次（会话级）
+    - 后续所有页面均复用该上下文，保证登录态一致
+    """
     logger.info("🚀 Session Setup: Creating logged-in context")
-    
-    # 创建上下文
-    context = browser.new_context(
-        viewport={"width": 1280, "height": 800}
-    )
-    
-    # 创建临时页面进行登录
+    context = browser.new_context(viewport={"width": 1280, "height": 800})
+
+    # 使用临时页面执行一次登录
     page = context.new_page()
-    
-    # 执行登录流程
-    logger.info("执行登录流程...")
+    logger.info("🔐 执行登录流程...")
     page.goto("http://localhost:8080/user/login")
     page.wait_for_load_state("networkidle")
-    
-    # 输入登录信息
+
+    # 输入登录信息并提交
     page.locator(".ant-form-item").first.locator("input").fill("001")
     page.locator(".ant-form-item").nth(1).locator("input").fill("admin")
     page.locator("input[type='password']").fill("Lx123456")
     page.get_by_text("登 录").click()
     page.wait_for_load_state("networkidle")
-    
+
     # 验证登录成功
     expect(page).to_have_url("http://localhost:8080/home")
     logger.info("✅ 登录成功，上下文已准备就绪")
-    
+
+    # 提取并缓存登录后的 token（优先 localStorage，其次 cookie）
+    global AUTH_TOKEN
+    try:
+        token = page.evaluate('window.localStorage.getItem("token")')
+    except Exception:
+        token = None
+    if not token:
+        try:
+            for c in context.cookies():
+                if c.get("name") in ("access","token", "auth_token", "Authorization"):
+                    token = c.get("value")
+                    break
+        except Exception:
+            token = None
+    AUTH_TOKEN = token
+    if AUTH_TOKEN:
+        logger.info(f"🔑 已获取到认证token: {AUTH_TOKEN[:20]}...")
+    else:
+        logger.warning("⚠️ 未在localStorage或cookie中发现token，请确认实际存储键名")
+
     # 关闭临时页面，保留已登录的上下文
-    page.close()
-    
+    # page.close()
+
     yield context
-    
+
     logger.info("🧹 Session Teardown: Closing logged-in context")
     context.close()
 
-# Function级别的页面fixture
+# 提供一个 session 级别的 token fixture，供 API 用例直接注入使用
+@pytest.fixture(scope="session")
+def auth_token(logged_in_context):
+    """会话级 token，API 测试直接使用"""
+    return AUTH_TOKEN
+
+# ================= 页面复用的不同粒度（按需选择） =================
+
 @pytest.fixture(scope="function")
 def logged_in_page(logged_in_context):
-    """Function级别的已登录页面，每个测试函数都会获得一个新的已登录页面"""
+    """
+    Function级页面（保留隔离性，推荐用于“容易脏”的用例）：
+    - 每个测试函数新建一个页面
+    - 复用 session 级上下文（已登录）
+    """
     logger.info("🚀 Function Setup: Creating new page from logged-in context")
     page = logged_in_context.new_page()
-    
-    # 导航到首页确保处于登录状态
     page.goto("http://localhost:8080/home")
     page.wait_for_load_state("networkidle")
-    
     yield page
-    
     logger.info("🧹 Function Teardown: Closing page")
     page.close()
 
-# 可选：未登录的页面fixture（用于登录测试）
+@pytest.fixture(scope="class")
+def logged_in_page_class(logged_in_context):
+    """
+    Class级页面（推荐默认使用，窗口更少）：
+    - 同一个测试类共享一个页面
+    - 适合导航密集、状态可控的场景
+    """
+    logger.info("🚀 Class Setup: Creating shared page for test class")
+    page = logged_in_context.new_page()
+    page.goto("http://localhost:8080/home")
+    page.wait_for_load_state("networkidle")
+    yield page
+    logger.info("🧹 Class Teardown: Closing shared page")
+    page.close()
+
+@pytest.fixture(scope="module")
+def logged_in_page_module(logged_in_context):
+    """
+    Module级页面（同文件共享一个页面）：
+    - 适合模块内用例共享状态的折中方案
+    """
+    logger.info("🚀 Module Setup: Creating shared page for test module")
+    page = logged_in_context.new_page()
+    page.goto("http://localhost:8080/home")
+    page.wait_for_load_state("networkidle")
+    yield page
+    logger.info("🧹 Module Teardown: Closing shared page")
+    page.close()
+
+@pytest.fixture(scope="session")
+def logged_in_page_session(logged_in_context):
+    """
+    Session级页面（整个会话共享一个页面）：
+    - 单窗口贯穿所有用例（性能最好）
+    - 注意：跨用例状态需谨慎重置，适合演示或非常稳定的场景
+    """
+    logger.info("🚀 Session Setup: Creating one shared page for all tests")
+    page = logged_in_context.new_page()
+    page.goto("http://localhost:8080/home")
+    page.wait_for_load_state("networkidle")
+    yield page
+    logger.info("🧹 Session Teardown: Closing session shared page")
+    # page.close()
+
+# 可选：未登录页面（用于专门验证登录流程）
 @pytest.fixture(scope="function")
 def fresh_page(browser):
-    """Function级别的全新页面，用于登录测试等需要未登录状态的场景"""
+    """
+    Function级未登录页面：
+    - 用于登录测试或需要未登录态的场景
+    - 独立上下文，避免污染已登录上下文
+    """
     context = browser.new_context(viewport={"width": 1280, "height": 800})
     page = context.new_page()
     yield page
