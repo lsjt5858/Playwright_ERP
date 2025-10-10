@@ -13,7 +13,6 @@ from playwright.sync_api import Page, expect
 import time
 import allure
 
-from Playwright_Study_week1.tests.login.test_login_1 import test_login
 
 # ==================== 全局Setup：测试环境初始化 ====================
 # 这部分代码在模块加载时执行，属于全局Setup

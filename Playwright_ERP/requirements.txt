@@ -1,5 +1,7 @@
+# 核心测试与报告依赖（Playwright + Pytest + Allure）
 allure-pytest==2.13.5
 allure-python-commons==2.13.5
+# 建议：确保本项目使用 Python 3.9（Mac M2 可用系统自带或通过 python.org 安装），避免与 3.10+ 的不兼容版本冲突
 async-timeout==5.0.1
 attrs==24.2.0
 baidu-aip==4.16.13
@@ -33,12 +35,23 @@ PyMySQL==1.1.1
 pytest==8.3.4
 pytest-base-url==2.1.0
 pytest-playwright==0.6.2
+pytest-html==4.1.1
+jinja2==3.1.4
 python-dateutil==2.9.0.post0
 python-slugify==8.0.4
 PyYAML==6.0.2
 redis==5.2.0
 requests==2.32.3
-results==0.1.1588569394
+# 数据库与迁移相关（如无使用可视情况移除）
+psycopg2-binary==2.9.9
+PyMySQL==1.1.1
+SQLAlchemy==2.0.36
+migra==3.0.1663481299
+sqlbag==0.1.1617247075
+schemainspect==3.1.1663587362
+sqlparse==0.4.3
+six==1.17.0
+results==1.4.0
 schemainspect==3.1.1663587362
 six==1.17.0
 SQLAlchemy==2.0.36
