@@ -1,0 +1,117 @@
+# ==================== Python相关 ====================
+# 虚拟环境
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Python缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 分发/打包
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# 单元测试/覆盖率报告
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# ==================== Pytest相关 ====================
+.pytest_cache/
+.cache/
+
+# ==================== Playwright相关 ====================
+# 测试结果
+test-results/
+playwright-report/
+test_recordings/
+screenshots/
+
+# Allure报告
+allure-results/
+allure-report/
+
+# 日志文件
+*.log
+test_log/
+logs/
+
+# ==================== IDE相关 ====================
+# PyCharm
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ==================== 系统文件 ====================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ==================== 其他 ====================
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 配置文件（如果包含敏感信息）
+config.ini
+secrets.json
