@@ -1,5 +1,5 @@
 # 🎭 Playwright 自动化测试学习项目
-
+ 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![Playwright](https://img.shields.io/badge/Playwright-1.49.0-green.svg)](https://playwright.dev/)
 [![Pytest](https://img.shields.io/badge/Pytest-8.3.4-orange.svg)](https://pytest.org/)
