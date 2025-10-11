@@ -109,6 +109,7 @@ def test_create_role(logged_in_page: Page):
         allure.attach.file(screenshot_path, name="角色创建成功", attachment_type=allure.attachment_type.PNG)
         
     logger.info("🎯 角色创建测试执行完成")
+    return role_name
 
 @allure.epic("用户管理系统")
 @allure.feature("角色管理")
@@ -159,7 +160,7 @@ def test_role_list(logged_in_page: Page):
             
     with allure.step("验证搜索功能"):
         # 验证搜索框存在
-        search_input = logged_in_page.get_by_placeholder("名称, 备注")
+        search_input = logged_in_page.gret_by_placeholder("名称, 备注")
         expect(search_input).to_be_visible()
         
         # 验证新增按钮存在
@@ -237,6 +238,72 @@ def test_role_list_session(logged_in_page_session: Page):
     logger.info("🎯 角色列表查看测试执行完成")
 
 
+@allure.epic("用户管理系统")
+@allure.feature("角色管理")
+@allure.story("角色列表")
+@allure.title("删除角色")
+@allure.description("测试角色列表页面的加载和数据显示")
+@allure.tag("role", "delete", "management")
+def test_delete_role_session(logged_in_page_session: Page):
+    """测试删除角色功能 - 复用登录状态"""
+    logger.info("🎯 开始执行删除角色测试")
+    page = logged_in_page_session
 
+    with allure.step("创建一个角色并获取名称"):
+        role_name = test_create_role(page)
+        logger.info(f"待删除的角色：{role_name}")
+
+    with allure.step("导航到角色管理页面并搜索该角色"):
+        page.goto("http://localhost:8080/role")
+        page.wait_for_load_state("networkidle")
+
+        search_input = page.get_by_placeholder("名称, 备注")
+        expect(search_input).to_be_visible()
+        search_input.fill(role_name)
+        search_input.press("Enter")
+
+        table_rows = page.locator('.ant-table-tbody tr')
+        target_row = table_rows.filter(has_text=role_name).first
+        expect(target_row).to_be_visible()
+
+    with allure.step("点击该行的删除按钮"):
+        delete_button = target_row.get_by_role("button", name=re.compile("删除"))
+        expect(delete_button).to_be_visible()
+        delete_button.click()
+
+        confirm_button = page.get_by_role("button", name=re.compile("确 定"))
+        # confirm_button = page.click('role=button[name="确 定"]')
+        # confirm_button = page.get_by_role("button", has_text="确 定")
+        # confirm_button = page.locator("body > div:nth-child(7) > div > div > div > div.ant-popover-inner > div > div.ant-popover-buttons > button.ant-btn.ant-btn-primary.ant-btn-sm > span")
+        expect(confirm_button).to_be_visible()
+        confirm_button.click()
+
+
+    with allure.step("验证该角色已被删除"):
+        # 重新搜索确保该记录不存在
+        search_input = page.get_by_placeholder("名称, 备注")
+        expect(search_input).to_be_visible()
+        search_input.fill(role_name)
+        search_input.press("Enter")
+        page.wait_for_timeout(800)
+
+        remaining = page.locator('.ant-table-tbody tr').filter(has_text=role_name).count()
+        if remaining == 0:
+            logger.info(f"✅ 角色删除成功：'{role_name}' 不在列表中")
+        else:
+            logger.error(f"❌ 角色删除失败：仍发现角色 '{role_name}'")
+            screenshot_path = f"screenshots/delete_role_failed_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+            os.makedirs("screenshots", exist_ok=True)
+            page.screenshot(path=screenshot_path)
+            allure.attach.file(screenshot_path, name="角色删除失败", attachment_type=allure.attachment_type.PNG)
+            assert False, f"角色删除失败：仍然存在 '{role_name}'"
+    with allure.step("截图记录删除结果"):
+        screenshot_path = f"screenshots/role_deleted_{role_name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+        os.makedirs("screenshots", exist_ok=True)
+        page.screenshot(path=screenshot_path)
+        allure.attach.file(screenshot_path, name="角色删除成功", attachment_type=allure.attachment_type.PNG)
+
+
+    logger.info("🎯 删除角色测试执行完成")
 
 
