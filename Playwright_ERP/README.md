@@ -44,24 +44,30 @@
 
 ## 📁 项目结构
 
+```
 Playwright_ERP/
-├── 📁 Playwright_ERP/                   # 主要测试项目
-│   ├── 📄 conftest.py                  # 全局测试配置和fixture
-│   ├── 📄 pytest.ini                   # Pytest 配置文件
-│   ├── 📄 requirements.txt             # Python 依赖包列表
-│   ├── 🚀 run.sh                       # 基础测试运行脚本
-│   ├── 🚀 run_all_tests.sh             # 完整测试运行脚本（推荐）
-│   ├── 📁 tests/                       # 测试用例目录
-│   │   ├── 📁 login/                   # 登录功能测试模块
-│   │   ├── 📁 role/                    # 角色管理测试模块
-│   │   └── 📁 user/                    # 用户管理测试模块
-│   ├── 📁 playwright文档/              # 学习文档和示例
-│   ├── 📁 screenshots/                 # 自动生成
-│   ├── 📁 test_recordings/             # 自动生成
-│   ├── 📁 test_log/                    # 自动生成
-│   ├── 📁 allure-results/              # 自动生成
-│   └── 📁 allure-report/               # 自动生成
-├── 📁 playwright文档/                   # 学习文档和示例
+├── 📄 .gitignore                       # Git 忽略规则
+├── 📄 README.md                        # 项目说明文档（本文件）
+├── 📄 __init__.py                      # Python 包初始化文件
+├── 📄 conftest.py                      # 全局测试配置和 fixture
+├── 📄 pytest.ini                      # Pytest 配置文件
+├── 📄 requirements.txt                 # Python 依赖包列表
+├── 🚀 run.sh                          # 基础测试运行脚本
+├── 🚀 run_all_tests.sh                # 完整测试运行脚本（推荐）
+├── 📁 tests/                          # 测试用例目录
+│   ├── 📄 __init__.py                 # 测试包初始化文件
+│   ├── 📁 goodscategories/            # 商品分类测试模块
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 goodscategories.py
+│   ├── 📁 login/                      # 登录功能测试模块
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 test_login.py
+│   ├── 📁 role/                       # 角色管理测试模块
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 test_role_management.py
+│   └── 📁 user/                       # 用户管理测试模块
+│       └── 📄 __init__.py
+├── 📁 playwright文档/                 # 学习文档和示例
 │   ├── 📄 UI自动化这么玩简直绝了~香迷糊了.md
 │   ├── 📄 第一篇 Playwright 控件查找及定位.md
 │   ├── 📄 第二篇 Playwright操作元素.md
@@ -72,26 +78,36 @@ Playwright_ERP/
 │   ├── 📄 第七篇 截图与录屏功能.md
 │   ├── 📄 第八篇 网络请求拦截与监控.md
 │   ├── 📄 第九篇 调试技巧与最佳实践.md
-│   └── 📁 源码/                        # 示例源码和工具
-│       ├── 📄 play_with_fun.py        # 实用工具脚本
+│   └── 📁 源码/                       # 示例源码和工具
+│       ├── 📄 play_with_fun.py       # 实用工具脚本
+│       ├── 📄 彻底解放测试工程师双手：用 Playwright API 智能生成 PO 模式，快速适配复杂测试场景.md
+│       ├── 📄 打造测试工程师的终极利器：一键爬取页面元素生成 PO 模式对象，全流程自动化.md
 │       └── 📁 测试工程师必备：智能清理需求文档/
-├── 📄 README.md                        # 项目说明文档（本文件）
-├── 📄 .gitignore                       # Git 忽略规则
-└── 📁 venv/                            # Python 虚拟环境（已忽略）
+├── 📁 screenshots/                    # 自动生成 - 测试截图保存目录
+├── 📁 test_recordings/                # 自动生成 - 测试录屏保存目录
+├── 📁 test_log/                       # 自动生成 - 测试日志保存目录
+├── 📁 allure-results/                 # 自动生成 - Allure 测试结果原始数据
+├── 📁 allure-report/                  # 自动生成 - Allure 测试报告
+└── 📁 venv/                           # Python 虚拟环境（已忽略）
 ```
 
 ### 📋 重要文件说明
 
-| 文件/目录 | 作用 | 重要性 |
-|-----------|------|--------|
-| `conftest.py` | 全局测试配置，包含浏览器、登录等fixture | ⭐⭐⭐⭐⭐ |
-| `pytest.ini` | Pytest运行配置，测试路径、标记等 | ⭐⭐⭐⭐ |
-| `requirements.txt` | Python依赖包列表 | ⭐⭐⭐⭐⭐ |
-| `run_all_tests.sh` | 一键运行脚本，推荐使用 | ⭐⭐⭐⭐ |
-| `tests/` | 所有测试用例的根目录 | ⭐⭐⭐⭐⭐ |
-| `screenshots/` | 自动截图保存目录 | ⭐⭐⭐ |
-| `test_log/` | 测试执行日志目录 | ⭐⭐⭐ |
-| `allure-results/` | Allure测试结果原始数据 | ⭐⭐⭐⭐ |
+| 文件/目录 | 作用描述 | 重要性 | 备注 |
+|-----------|----------|--------|------|
+| `conftest.py` | 全局测试配置，包含浏览器、登录等 fixture | ⭐⭐⭐⭐⭐ | 核心配置文件 |
+| `pytest.ini` | Pytest 运行配置，测试路径、标记等 | ⭐⭐⭐⭐ | 测试框架配置 |
+| `requirements.txt` | Python 依赖包列表 | ⭐⭐⭐⭐⭐ | 环境依赖管理 |
+| `run_all_tests.sh` | 一键运行脚本，推荐使用 | ⭐⭐⭐⭐ | 便捷执行工具 |
+| `tests/` | 所有测试用例的根目录 | ⭐⭐⭐⭐⭐ | 测试代码主目录 |
+| `tests/login/` | 登录功能测试模块 | ⭐⭐⭐⭐⭐ | 核心功能测试 |
+| `tests/role/` | 角色管理测试模块 | ⭐⭐⭐⭐ | 权限管理测试 |
+| `playwright文档/` | 学习文档和示例代码 | ⭐⭐⭐ | 学习参考资料 |
+| `screenshots/` | 自动截图保存目录 | ⭐⭐⭐ | 测试结果记录 |
+| `test_recordings/` | 测试录屏保存目录 | ⭐⭐⭐ | 测试过程记录 |
+| `test_log/` | 测试执行日志目录 | ⭐⭐⭐ | 调试和分析 |
+| `allure-results/` | Allure 测试结果原始数据 | ⭐⭐⭐⭐ | 报告生成源数据 |
+| `allure-report/` | Allure 测试报告 | ⭐⭐⭐⭐ | 可视化测试报告 |
 
 ## 🚀 快速开始
 
