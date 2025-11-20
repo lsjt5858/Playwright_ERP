@@ -29,7 +29,7 @@ def test_create_role(logged_in_page: Page):
     with allure.step("导航到角色管理页面"):
         logged_in_page.goto("http://localhost:8080/role")
         logged_in_page.wait_for_load_state("networkidle")
-        
+
     with allure.step("点击创建角色按钮"):
         # 使用最稳定的定位方法
         create_button = logged_in_page.get_by_text("新增角色")
