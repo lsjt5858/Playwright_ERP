@@ -121,23 +121,24 @@ def test_create_role(logged_in_page: Page):
 def test_role_list(logged_in_page: Page):
     """测试查看角色列表功能 - 复用登录状态"""
     logger.info("🎯 开始执行角色列表查看测试")
+    page = logged_in_page
     
     with allure.step("导航到角色管理页面"):
-        logged_in_page.goto("http://localhost:8080/role")
-        logged_in_page.wait_for_load_state("networkidle")
+        page.goto("http://localhost:8080/role")
+        page.wait_for_load_state("networkidle")
 
     with allure.step("验证页面加载"):
         # 验证页面URL
-        expect(logged_in_page).to_have_url(re.compile(".*role.*"))
+        expect(page).to_have_url(re.compile(".*role.*"))
         
         # 验证关键元素存在
-        page_title = logged_in_page.locator('h1, .page-title, [class*="title"]')
+        page_title = page.locator('h1, .page-title, [class*="title"]')
         if page_title.count() > 0:
             expect(page_title.first).to_be_visible()
 
     with allure.step("验证角色列表表格"):
         # 定位角色列表表格
-        role_table = logged_in_page.locator(".ant-table-tbody")
+        role_table = page.locator(".ant-table-tbody")
         expect(role_table).to_be_visible()
         # 验证表格有数据（修正：应该检查不为空）
         table_rows = role_table.locator('tr')
@@ -151,7 +152,7 @@ def test_role_list(logged_in_page: Page):
             expect(first_row).to_be_visible()
             
             # 验证表头和数据结构
-            table_headers = logged_in_page.locator('.ant-table-thead th')
+            table_headers = page.locator('.ant-table-thead th')
             headers_count = table_headers.count()
             logger.info(f"表格列数: {headers_count}")
             
@@ -160,16 +161,16 @@ def test_role_list(logged_in_page: Page):
             
     with allure.step("验证搜索功能"):
         # 验证搜索框存在
-        search_input = logged_in_page.gret_by_placeholder("名称, 备注")
+        search_input = page.get_by_placeholder("名称, 备注")
         expect(search_input).to_be_visible()
         
         # 验证新增按钮存在
-        create_button = logged_in_page.get_by_text("新增角色")
+        create_button = page.get_by_text("新增角色")
         expect(create_button).to_be_visible()
         
     with allure.step("截图记录"):
         screenshot_path = f"screenshots/role_list_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-        logged_in_page.screenshot(path=screenshot_path)
+        page.screenshot(path=screenshot_path)
         
     logger.info("🎯 角色列表查看测试执行完成")
 
