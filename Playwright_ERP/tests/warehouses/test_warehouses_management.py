@@ -10,7 +10,6 @@ import allure
 from playwright.sync_api import Page,expect
 import logging
 
-
 @allure.epic("基础数据")
 @allure.feature("仓库管理")
 @allure.story("仓库创建")
@@ -32,13 +31,39 @@ def test_create_warehouses(logged_in_page_module: Page):
         create_button.click()
 
     with allure.step("输入新增仓库信息"):
-        name = f"auto_{datetime.datetime.now().strftime('%H%M%S')}"
+        warehouse_name = f"auto_{datetime.datetime.now().strftime('%H%M%S')}"
         name_input = page.locator(".ant-row").filter(has_text="仓库名称").locator("input")
         expect(name_input).to_be_visible()
-        name_input.fill(name)
+        name_input.fill(warehouse_name)
 
     with allure.step("点击确定按钮"):
         ok_button = page.get_by_role("button", name="确 定")
         expect(ok_button).to_be_visible()
         ok_button.click()
 
+    return warehouse_name
+
+def test_updata_warehouses(logged_in_page_module: Page):
+    """测试更新仓库的完整功能"""
+    logging.info("🎯 开始测试创建仓库")
+    page = logged_in_page_module
+
+    with allure.step("创建一个仓库"):
+        resp_create_warehouses = test_create_warehouses(page)
+
+    with allure.step("搜索新建的仓库"):
+        page.get_by_placeholder("编号, 名称, 备注").fill(resp_create_warehouses)
+
+    with allure.step("点击查询"):
+        page.get_by_role("button",name="查询").click()
+
+    with allure.step("点击编辑按钮"):
+        page.get_by_role("button",name="编辑").click()
+
+    with allure.step("编辑仓库名称"):
+        name_input = page.locator(".ant-row").filter(has_text="仓库名称").locator("input")
+        name_input.fill(resp_create_warehouses+"_up")
+
+    with allure.step("点击确定按钮"):
+        ok_button = page.get_by_role("button", name="确 定")
+        ok_button.click()
